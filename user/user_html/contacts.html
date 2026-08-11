@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacts &amp; Emergency Hotlines | Barangay Cabanbanan</title>
+<meta name="description" content="Emergency hotlines, office contact details, and location of Barangay San Isidro, Quezon City.">
+<link rel="stylesheet" href="../user_style/style.css">
+</head>
+<body>
+
+<div class="top-strip">
+  <div class="container">
+    <span>Republic of the Philippines &nbsp;<span class="sep">/</span>&nbsp; Manaoag, Pangasinan &nbsp;<span class="sep">/</span>&nbsp; District IV</span>
+    <span><a href="tel:+63281234567">(02) 8123-4567</a><span class="sep">|</span>Office hours: Mon–Fri, 8:00 AM–5:00 PM</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../user_html/home.html" class="brand">
+      <img class="seal" src="../user_style/images/barangay-seal.png" alt="Barangay Cabanbanan seal">
+      <span class="brand-text">
+        <span class="brand-kicker">Official Website</span>
+        <span class="brand-name">Barangay Cabanbanan</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span>
+    </button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="../user_html/home.html">Home</a></li>
+        <li><a href="../user_html/officials.html">Officials</a></li>
+        <li><a href="../user_html/contacts.html">Contacts</a></li>
+        <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+        <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">In case of emergency</span>
+    <h1>Contacts &amp; Emergency Hotlines</h1>
+    <p class="lede">Save these numbers. In a life-threatening emergency, call the priority lines below first — they are answered around the clock.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="container">
+
+      <!-- 🔌 SERVER CONNECTION POINT: this grid is populated by
+           renderHotlines() in contacts.js, reading the "priority"
+           hotlines set on the admin's Contact Info page. -->
+      <div class="hotline-priority" id="hotlinePriorityGrid">
+        <!-- priority hotline cards injected by contacts.js -->
+      </div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Full directory</span>
+          <h2>All Hotlines</h2>
+        </div>
+      </div>
+
+      <table class="hotline-table">
+        <thead>
+          <tr>
+            <th>Office / Service</th>
+            <th>Contact Number</th>
+            <th>Availability</th>
+          </tr>
+        </thead>
+        <!-- 🔌 SERVER CONNECTION POINT: rows injected by renderHotlines()
+             in contacts.js, from the admin's Contact Info page. -->
+        <tbody id="hotlineTableBody">
+        </tbody>
+      </table>
+
+      <div class="contact-columns">
+        <!-- 🔌 SERVER CONNECTION POINT: the 4 "value" divs below have ids
+             (contactAddress, contactPhone, contactEmail, contactHours) that
+             loadContactsInfo() in contacts.js fills in from the admin's
+             "Contact Info" page. Static text stays as fallback content. -->
+        <div class="info-card">
+          <h3>Barangay Office</h3>
+          <div class="info-row">
+            <span class="ic">A</span>
+            <div>
+              <div class="label">Address</div>
+              <div class="value" id="contactAddress">123 Sampaguita Street, San Isidro, District IV, Quezon City</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="ic">T</span>
+            <div>
+              <div class="label">Trunk Line</div>
+              <div class="value" id="contactPhone">(02) 8123-4567</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="ic">E</span>
+            <div>
+              <div class="label">Email</div>
+              <div class="value" id="contactEmail">barangaysanisidro.qc@gov.ph</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="ic">H</span>
+            <div>
+              <div class="label">Office Hours</div>
+              <div class="value" id="contactHours">Mon–Fri 8:00 AM–5:00 PM · Sat 8:00 AM–12:00 NN</div>
+            </div>
+          </div>
+          <div class="info-row">
+            <span class="ic">S</span>
+            <div>
+              <div class="label">Barangay Tanod</div>
+              <div class="value">On duty 24/7 for emergency dispatch and coordination</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-frame">
+          <iframe
+            src="https://www.google.com/maps?q=Barangay+Cabanbanan,+Manaoag,+Pangasinan,+Philippines&output=embed"
+            title="Map showing the approximate location of Barangay San Isidro, Quezon City"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg class="seal" style="--seal-size:46px;" viewBox="0 0 100 100" role="img" aria-label="Barangay San Isidro seal">
+          <circle cx="50" cy="50" r="47" fill="#0E2033" stroke="#C89B3C" stroke-width="3"/>
+          <polygon points="30,56 50,36 70,56" fill="#C89B3C"/>
+          <rect x="35" y="56" width="30" height="17" fill="#C89B3C"/>
+          <rect x="45.5" y="63" width="9" height="10" fill="#0E2033"/>
+        </svg>
+        <div>
+          <strong style="color:#fff; font-family:'Fraunces',serif; font-size:1.05rem;">Barangay Cabanbanan</strong>
+          <p> Cabanbanan<br>Manaoag, Pangasinan, Philippines</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="../user_html/home.html">Home</a></li>
+          <li><a href="../user_html/officials.html">Officials</a></li>
+          <li><a href="../user_html/contacts.html">Contacts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+          <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+          <li><a href="../user_html/contacts.html">Emergency Hotlines</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Office Hours</h5>
+        <ul>
+          <li>Mon–Fri: 8:00 AM–5:00 PM</li>
+          <li>Sat: 8:00 AM–12:00 NN</li>
+          <li>Emergency line: 24/7</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Barangay Cabanbanan, Manaoag, Pangasinan. All rights reserved.</span>
+      <span>This is a sample civic site built for demonstration purposes.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../user_script/common.js"></script>
+<script src="../user_script/contacts.js"></script>
+</body>
+</html>

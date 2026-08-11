@@ -1,0 +1,260 @@
+<!--
+  ================================================================
+  🌐 PUBLIC SITE — File a Complaint page (open to any resident)
+  Path in project: user_html/complaint.html
+  Paired script:    user_script/complaint.js
+  Purpose: resident fills this out to file a new complaint, with
+  optional multi-file evidence. Submits to POST /complaints.
+  ================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File a Complaint | Barangay Cabanbanan</title>
+<meta name="description" content="File a complaint with Barangay San Isidro — neighbor disputes, disturbances, sanitation issues, and other community concerns.">
+<link rel="stylesheet" href="../user_style/style.css">
+</head>
+<body>
+
+<div class="top-strip">
+  <div class="container">
+    <span>Republic of the Philippines &nbsp;<span class="sep">/</span>&nbsp;Manaoag, Pangasinan &nbsp;<span class="sep">/</span>&nbsp; District IV</span>
+    <span><a href="tel:+63281234567">(02) 8123-4567</a><span class="sep">|</span>Office hours: Mon–Fri, 8:00 AM–5:00 PM</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../user_html/home.html" class="brand">
+      <img class="seal" src="../user_style/images/barangay-seal.png" alt="Barangay Cabanbanan seal">
+      <span class="brand-text">
+        <span class="brand-kicker">Official Website</span>
+        <span class="brand-name">Barangay Cabanbanan</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span>
+    </button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="../user_html/home.html">Home</a></li>
+        <li><a href="../user_html/officials.html">Officials</a></li>
+        <li><a href="../user_html/contacts.html">Contacts</a></li>
+        <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+        <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Barangay justice system</span>
+    <h1>File a Complaint</h1>
+    <p class="lede">Report a dispute or concern for barangay mediation. For anything life-threatening, call the emergency hotline instead of using this form.</p>
+    <div class="hero-actions">
+      <a href="../user_html/contacts.html" class="btn btn-maroon">Emergency? Call hotlines &rarr;</a>
+    </div>
+  </div>
+</section>
+<!-- "Your Complaint Status" panel is injected here (after .page-hero) by status-panel.js, only when this browser has a pending/ongoing/recently-resolved complaint. -->
+
+<main>
+  <section class="section">
+    <div class="container complaint-layout">
+
+      <div class="complaint-info">
+        <span class="eyebrow">How it works</span>
+        <h2>The Katarungang Pambarangay process</h2>
+        <p>Most disputes between residents are first brought to the barangay for mediation before they can be filed in court. Here's what happens after you submit a complaint.</p>
+
+        <div class="complaint-steps">
+          <div class="complaint-step">
+            <span class="num">1</span>
+            <div>
+              <h4>Complaint is logged</h4>
+              <p>Your report is recorded and given a tracking number for reference.</p>
+            </div>
+          </div>
+          <div class="complaint-step">
+            <span class="num">2</span>
+            <div>
+              <h4>Summons is issued</h4>
+              <p>The Lupon Tagapamayapa sends a notice to the other party to appear for mediation.</p>
+            </div>
+          </div>
+          <div class="complaint-step">
+            <span class="num">3</span>
+            <div>
+              <h4>Mediation hearing</h4>
+              <p>Both parties meet with a barangay official or Lupon member to seek a settlement.</p>
+            </div>
+          </div>
+          <div class="complaint-step">
+            <span class="num">4</span>
+            <div>
+              <h4>Settlement or certification</h4>
+              <p>If unresolved, a Certificate to File Action is issued so the case can proceed to court.</p>
+            </div>
+          </div>
+        </div>
+
+        <span class="eyebrow">Common concerns filed here</span>
+        <div class="issue-chip-grid">
+          <span class="issue-chip">Noise disturbance</span>
+          <span class="issue-chip">Neighbor / boundary dispute</span>
+          <span class="issue-chip">Alarm and scandal</span>
+          <span class="issue-chip">Sanitation / garbage</span>
+          <span class="issue-chip">Stray animal concern</span>
+          <span class="issue-chip">Illegal vending / obstruction</span>
+        </div>
+
+        <div class="escalate-box">
+          <strong>Involves violence or immediate danger?</strong>
+          Do not use this form. Call the 24/7 Barangay Emergency Hotline at 0917-123-4567 or the VAWC Desk at 0919-456-7890, or dial 117 for police.
+        </div>
+      </div>
+
+      <div class="complaint-form-card">
+        <h3>Complaint Form</h3>
+        <p style="font-size:0.86rem;">Fields marked with <strong>*</strong> are required. False or malicious complaints may be subject to barangay sanctions.</p>
+
+        <form id="complaint-form" class="form-grid" novalidate>
+
+          <div class="form-field">
+            <label for="c-name">Full Name *</label>
+            <input type="text" id="c-name" name="c-name" required placeholder="Juan D. Dela Cruz">
+          </div>
+
+          <div class="form-field">
+            <label for="c-contact">Contact Number *</label>
+            <input type="tel" id="c-contact" name="c-contact" required placeholder="09XX-XXX-XXXX">
+          </div>
+
+          <div class="form-field full">
+            <label for="c-address">Complainant's Address *</label>
+            <input type="text" id="c-address" name="c-address" required placeholder="House No., Street, Purok/Zone">
+          </div>
+
+          <div class="form-field full">
+            <label for="issue-type">Type of Issue / Complaint *</label>
+            <select id="issue-type" name="issue-type" required>
+              <option value="" disabled selected>Select the concern that best fits</option>
+              <option value="noise">Noise Disturbance</option>
+              <option value="dispute">Neighbor Dispute / Boundary Conflict</option>
+              <option value="disturbance">Public Disturbance / Alarm and Scandal</option>
+              <option value="sanitation">Sanitation / Garbage Complaint</option>
+              <option value="animal">Stray Animal Concern</option>
+              <option value="domestic">Domestic Issue (VAWC-related)</option>
+              <option value="vending">Illegal Vending / Obstruction</option>
+              <option value="other">Other Concern</option>
+            </select>
+          </div>
+
+          <div class="form-field full">
+            <label>Involves the Other Party's Address? <span class="hint">(if known)</span></label>
+            <input type="text" id="c-otherparty" name="c-otherparty" placeholder="Name / address of the person or household involved">
+          </div>
+
+          <div class="form-field full">
+            <label for="c-details">Description of the Issue *</label>
+            <textarea id="c-details" name="c-details" required placeholder="Describe what happened, when, and how often — include dates if this is recurring."></textarea>
+          </div>
+
+          <div class="form-field full">
+            <label>Urgency</label>
+            <div class="radio-row">
+              <label class="radio-opt"><input type="radio" name="urgency" value="routine" checked> Routine</label>
+              <label class="radio-opt"><input type="radio" name="urgency" value="ongoing"> Ongoing / ​recurring</label>
+              <label class="radio-opt"><input type="radio" name="urgency" value="urgent"> Needs prompt attention</label>
+            </div>
+          </div>
+
+          <div class="form-field full">
+            <label for="evidence-file">Supporting Evidence <span class="hint">(photos, documents — optional, you can attach more than one)</span></label>
+            <label class="file-drop" id="file-drop" for="evidence-file">
+              <input type="file" id="evidence-file" name="evidence-file" accept="image/*,.pdf" multiple>
+              Click to attach file(s)
+              <span class="fname">No file selected</span>
+            </label>
+          </div>
+
+          <div class="form-field full" style="margin-bottom:0;">
+            <div class="consent-row">
+              <input type="checkbox" id="c-consent" name="c-consent" required>
+              <label for="c-consent">I certify that the information above is true and understand it will be used for barangay mediation purposes under the Katarungang Pambarangay Law. *</label>
+            </div>
+            <button type="submit" class="btn btn-maroon btn-block">Submit Complaint</button>
+            <p class="form-footnote">You'll receive a tracking number to follow up with the Barangay Secretary's office.</p>
+          </div>
+        </form>
+
+        <div class="confirm-panel" id="confirm-panel">
+          <div class="check-badge" id="confirm-badge">&#10003;</div>
+          <h3 id="confirm-title">Complaint Received</h3>
+          <p id="confirm-message">Your complaint has been logged. Please keep your tracking number for follow-up at the Barangay Hall.</p>
+          <div class="tracking" id="tracking-code">BSI-GEN-000000</div>
+          <p id="confirm-status-line" style="font-size:0.85rem; font-weight:600;"></p>
+          <p id="confirm-note" style="font-size:0.85rem;">A barangay staff member will contact you within 2 business days to schedule mediation. You won't be able to file another complaint until this one is marked resolved.</p>
+          <button type="button" class="btn btn-ghost" id="check-status-btn">Check Status</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg class="seal" style="--seal-size:46px;" viewBox="0 0 100 100" role="img" aria-label="Barangay San Isidro seal">
+          <circle cx="50" cy="50" r="47" fill="#0E2033" stroke="#C89B3C" stroke-width="3"/>
+          <polygon points="30,56 50,36 70,56" fill="#C89B3C"/>
+          <rect x="35" y="56" width="30" height="17" fill="#C89B3C"/>
+          <rect x="45.5" y="63" width="9" height="10" fill="#0E2033"/>
+        </svg>
+        <div>
+          <strong style="color:#fff; font-family:'Fraunces',serif; font-size:1.05rem;">Barangay San Isidro</strong>
+          <p>123 Sampaguita Street, San Isidro,<br>District IV, Quezon City, Philippines</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="../user_html/home.html">Home</a></li>
+          <li><a href="../user_html/officials.html">Officials</a></li>
+          <li><a href="../user_html/contacts.html">Contacts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+          <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+          <li><a href="../user_html/contacts.html">Emergency Hotlines</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Office Hours</h5>
+        <ul>
+          <li>Mon–Fri: 8:00 AM–5:00 PM</li>
+          <li>Sat: 8:00 AM–12:00 NN</li>
+          <li>Emergency line: 24/7</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Barangay Cabanbanan, Manaoag, Pangasinan. All rights reserved.</span>
+     
+    </div>
+  </div>
+</footer>
+
+<script src="../user_script/common.js"></script>
+<script src="../user_script/status-panel.js"></script>
+<script src="../user_script/complaint.js"></script>
+</body>
+</html>

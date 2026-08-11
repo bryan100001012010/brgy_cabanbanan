@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Officials | Barangay Cabanbanan</title>
+<meta name="description" content="Meet the elected officials and staff of Barangay San Isidro, Quezon City.">
+<link rel="stylesheet" href="../user_style/style.css">
+</head>
+<body class="officials-page">
+
+<div class="top-strip">
+  <div class="container">
+    <span>Republic of the Philippines &nbsp;<span class="sep">/</span>&nbsp; Manaoag, Pangasinan &nbsp;<span class="sep">/</span>&nbsp; District IV</span>
+    <span><a href="tel:+63281234567">(02) 8123-4567</a><span class="sep">|</span>Office hours: Mon–Fri, 8:00 AM–5:00 PM</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../user_html/home.html" class="brand">
+      <img class="seal" src="../user_style/images/barangay-seal.png" alt="Barangay Cabanbanan seal">
+      <span class="brand-text">
+        <span class="brand-kicker">Official Website</span>
+        <span class="brand-name">Barangay Cabanbanan</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span>
+    </button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="../user_html/home.html">Home</a></li>
+        <li><a href="../user_html/officials.html">Officials</a></li>
+        <li><a href="../user_html/contacts.html">Contacts</a></li>
+        <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+        <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">CABANBANAN</span>
+    <h1>Barangay Officials</h1>
+    <p class="lede">The elected council and staff of Barangay Cabanbanan, organized by committee so you know exactly who to approach.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section section-tight">
+    <div class="container">
+      <!-- ⚠️ PLACEHOLDER — replace with Barangay San Isidro's actual
+           Mission & Vision statement before publishing. -->
+      <div class="mv-grid">
+        <div class="mv-card mv-mission">
+          <span class="eyebrow">Our purpose</span>
+          <h2>Mission</h2>
+          <p>To deliver responsive, transparent, and accessible barangay services that protect the welfare of every resident of San Isidro and strengthen the community we serve.</p>
+        </div>
+        <div class="mv-card mv-vision">
+          <span class="eyebrow" style="color:var(--sage);">Looking ahead</span>
+          <h2>Vision</h2>
+          <p>A peaceful, progressive, and united Barangay San Isidro — where every family is safe, every voice is heard, and every service is within reach.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Populated at runtime by officials.js -> renderCaptain(), pulling
+           from GET /api/officials (category === "captain"). -->
+      <div class="official-lead" id="captainContainer"></div>
+
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Sangguniang Barangay</span>
+          <h2>Barangay Kagawads</h2>
+        </div>
+        <p class="lede">Each kagawad chairs a standing committee that handles specific community concerns.</p>
+      </div>
+
+      <!-- Populated at runtime by officials.js -> renderKagawads(),
+           pulling from GET /api/officials (category === "kagawad"). -->
+      <div class="officials-grid" id="kagawadContainer"></div>
+
+      <div class="sk-band">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow" style="color:var(--sage);">Sangguniang Kabataan</span>
+            <h2>SK Council</h2>
+          </div>
+          <p class="lede">Youth representation handling programs for residents aged 15–30.</p>
+        </div>
+        <!-- Populated at runtime by officials.js -> renderSk(),
+             pulling from GET /api/officials (category === "sk"). -->
+        <div class="staff-grid" id="skContainer"></div>
+      </div>
+
+      <div class="section-head" style="margin-top:56px;">
+        <div>
+          <span class="eyebrow">Administrative staff</span>
+          <h2>Barangay Secretariat</h2>
+        </div>
+        <p class="lede">The staff who handle day-to-day transactions, records, and frontline services.</p>
+      </div>
+      <div class="staff-grid" id="secretariatContainer"></div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg class="seal" style="--seal-size:46px;" viewBox="0 0 100 100" role="img" aria-label="Barangay San Isidro seal">
+          <circle cx="50" cy="50" r="47" fill="#0E2033" stroke="#C89B3C" stroke-width="3"/>
+          <polygon points="30,56 50,36 70,56" fill="#C89B3C"/>
+          <rect x="35" y="56" width="30" height="17" fill="#C89B3C"/>
+          <rect x="45.5" y="63" width="9" height="10" fill="#0E2033"/>
+        </svg>
+        <div>
+          <strong style="color:#fff; font-family:'Fraunces',serif; font-size:1.05rem;">Barangay San Isidro</strong>
+          <p>Barangay Caban<br>Manaoag, Pangasinan, Philippines</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="../user_html/home.html">Home</a></li>
+          <li><a href="../user_html/officials.html">Officials</a></li>
+          <li><a href="../user_html/contacts.html">Contacts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+          <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+          <li><a href="../user_html/contacts.html">Emergency Hotlines</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Office Hours</h5>
+        <ul>
+          <li>Mon–Fri: 8:00 AM–5:00 PM</li>
+          <li>Sat: 8:00 AM–12:00 NN</li>
+          <li>Emergency line: 24/7</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Barangay Cabanbanan, Manaoag, Pangasinan. All rights reserved.</span>
+      
+    </div>
+  </div>
+</footer>
+
+<script src="../user_script/common.js"></script>
+<script src="../user_script/officials.js"></script>
+</body>
+</html>

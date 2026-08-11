@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Officials | Barangay Admin</title>
+<link rel="stylesheet" href="/admin/css/style.css">
+
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="seal">BSI</div>
+      <div class="name">Barangay CABANBANAN <span>Admin Panel</span></div>
+    </div>
+    <ul class="nav-list">
+      <li><a class="nav-link" href="/admin/admin_html/home.html"><span class="ic">🏠</span> Dashboard / Home</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/cert.html"><span class="ic">📄</span> Certificates</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/complaint.html"><span class="ic">📋</span> Complaints</a></li>
+      <li><a class="nav-link active" href="/admin/admin_html/officials-admin.html"><span class="ic">🧑</span> Officials</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/contacts.html"><span class="ic">☎️</span> Contact Info</a></li>
+    </ul>
+    <div class="sidebar-foot">
+      <button class="logout-btn" id="logoutBtn"><span class="ic">↩</span> Log Out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="hamburger" id="hamburger">☰</button>
+        <div>
+          <h2>Officials</h2>
+          <div class="page-sub">Manage the Captain, Kagawads, SK Council, and Secretariat shown on the public "Officials" page</div>
+        </div>
+      </div>
+      <div class="admin-chip"><span class="dot"></span><span class="label">Admin</span></div>
+    </header>
+
+    <div class="content">
+
+      <!-- CAPTAIN — exactly one, edit-only, add button hides once one exists -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Punong Barangay</h3>
+            <p>There is only one Captain. Edit the existing entry, or add one if none exists yet.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="addCaptainBtn" style="display:none;">+ Add Captain</button>
+        </div>
+
+        <div id="captainCard"></div>
+        <div class="empty-state" id="captainEmpty" style="display:none;">
+          <div class="big-ic">🎖️</div>
+          No Barangay Captain added yet. Click "Add Captain" to create one.
+        </div>
+      </div>
+
+      <!-- KAGAWAD — addable list -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Barangay Kagawads</h3>
+            <p>Add, edit, or remove kagawads and their committee assignments.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="addKagawadBtn">+ Add Kagawad</button>
+        </div>
+
+        <div class="card-list" id="kagawadList"></div>
+        <div class="empty-state" id="kagawadEmpty" style="display:none;">
+          <div class="big-ic">🧑‍💼</div>
+          No kagawads added yet. Click "Add Kagawad" to create one.
+        </div>
+      </div>
+
+      <!-- SK — addable list -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>SK Council</h3>
+            <p>Add, edit, or remove Sangguniang Kabataan officials.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="addSkBtn">+ Add SK Official</button>
+        </div>
+
+        <div class="card-list" id="skList"></div>
+        <div class="empty-state" id="skEmpty" style="display:none;">
+          <div class="big-ic">🧑‍🎓</div>
+          No SK officials added yet. Click "Add SK Official" to create one.
+        </div>
+      </div>
+
+      <!-- SECRETARIAT — addable list -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Barangay Secretariat</h3>
+            <p>Add, edit, or remove administrative staff (Secretary, Treasurer, Chief Tanod, etc.).</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="addSecretariatBtn">+ Add Secretariat Staff</button>
+        </div>
+
+        <div class="card-list" id="secretariatList"></div>
+        <div class="empty-state" id="secretariatEmpty" style="display:none;">
+          <div class="big-ic">🗂️</div>
+          No secretariat staff added yet. Click "Add Secretariat Staff" to create one.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT MODAL (shared by all three sections) -->
+<div class="modal-overlay" id="officialModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="officialModalTitle">Add Official</h3>
+      <button class="modal-close" id="closeOfficialModalBtn">✕</button>
+    </div>
+    <form id="officialForm">
+      <input type="hidden" id="officialId">
+      <input type="hidden" id="officialCategory">
+      <input type="hidden" id="officialPhotoUrl">
+
+      <div class="field">
+        <label for="officialPhoto">Photo</label>
+        <div class="photo-upload-row">
+          <div class="photo-preview" id="officialPhotoPreview">
+            <span id="officialPhotoPreviewInitials">＋</span>
+          </div>
+          <div class="photo-upload-controls">
+            <label class="btn btn-secondary btn-sm" for="officialPhoto">Choose Photo</label>
+            <input type="file" id="officialPhoto" accept="image/*" style="display:none;">
+            <button type="button" class="btn btn-danger btn-sm" id="removeOfficialPhotoBtn" style="display:none;">Remove</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="officialName">Full Name</label>
+        <input type="text" id="officialName" required placeholder="e.g. Hon. Juan Dela Cruz">
+      </div>
+
+      <div class="field">
+        <label for="officialPosition" id="officialPositionLabel">Position</label>
+        <input type="text" id="officialPosition" required placeholder="e.g. Committee on Health">
+      </div>
+
+      <div class="field">
+        <label for="officialCommittee">Committee Description</label>
+        <textarea id="officialCommittee" rows="3" placeholder="e.g. Health center operations, vaccination drives, senior citizen affairs"></textarea>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn btn-secondary" id="cancelOfficialModalBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Official</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ADMIN PANEL (list of admin accounts) ============ -->
+<div class="modal-overlay" id="adminPanelModal">
+  <div class="modal admin-panel-modal">
+    <div class="modal-head">
+      <h3>Admin Accounts</h3>
+      <button class="modal-close" id="closeAdminPanelBtn">✕</button>
+    </div>
+
+    <div class="admin-panel-body">
+      <div class="admin-panel-toolbar">
+        <p class="admin-panel-sub">Manage the accounts that can log in to this admin panel.</p>
+        <button type="button" class="btn btn-primary btn-sm" id="addAdminBtn">+ New Admin</button>
+      </div>
+
+      <div id="adminList" class="admin-list"></div>
+      <div class="empty-state" id="adminEmpty" style="display:none;">
+        <div class="big-ic">👤</div>
+        No admin accounts yet. Click "New Admin" to add one.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADD / EDIT ADMIN FORM ============ -->
+<div class="modal-overlay" id="adminFormModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="adminFormTitle">New Admin</h3>
+      <button class="modal-close" id="closeAdminFormBtn">✕</button>
+    </div>
+    <form id="adminForm">
+      <input type="hidden" id="adminId">
+
+      <div class="field">
+        <label for="adminName">Full Name</label>
+        <input type="text" id="adminName" required placeholder="e.g. Juan Dela Cruz">
+      </div>
+
+      <div class="field">
+        <label for="adminUsername">Username</label>
+        <input type="text" id="adminUsername" required placeholder="e.g. jdelacruz">
+      </div>
+
+      <div class="field">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" placeholder="Set a password">
+        <div style="font-size:12px; color:var(--text-mute); margin-top:4px;" id="adminPasswordHint">
+          Minimum 6 characters.
+        </div>
+      </div>
+<script src="/admin/admin_script/common.js"></script>
+<script src="/admin/admin_script/officials.js"></script>
+<script src="/admin/admin_script/admin-panel.js"></script>
+</body>
+</html>

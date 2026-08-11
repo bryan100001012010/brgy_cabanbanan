@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | Barangay Admin</title>
+<link rel="stylesheet" href="/admin/css/style.css">
+<style>
+  /* Existing-photos gallery inside the announcement edit modal.
+     Feel free to move this into css/style.css instead. */
+  .existing-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .existing-image-thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+  }
+  .existing-image-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+  .existing-image-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: #d33;
+    color: #fff;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ============ SIDEBAR (same on every page) ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="seal">BSI</div>
+      <div class="name">Barangay Cabnabanan <span>Admin Panel</span></div>
+    </div>
+
+    <ul class="nav-list">
+      <li><a class="nav-link" href="/admin/admin_html/home.html"><span class="ic">🏠</span> Dashboard / Home</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/cert.html"><span class="ic">📄</span> Certificates</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/complaint.html"><span class="ic">📋</span> Complaints</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/officials.html"><span class="ic">🧑</span> Officials</a></li>
+      <li><a class="nav-link" href="/admin/admin_html/contacts.html"><span class="ic">☎️</span> Contact Info</a></li>
+    </ul>
+
+    <div class="sidebar-foot">
+      <button class="logout-btn" id="logoutBtn"><span class="ic">↩</span> Log Out</button>
+    </div>
+  </aside>
+  <!-- ============ END SIDEBAR ============ -->
+
+  <div class="main">
+    <header class="topbar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="hamburger" id="hamburger">☰</button>
+        <div>
+          <h2>Dashboard</h2>
+          <div class="page-sub">Overview & homepage announcements</div>
+        </div>
+      </div>
+      <div class="admin-chip"><span class="dot"></span><span class="label">Admin</span></div>
+    </header>
+
+    <div class="content">
+
+      <!-- Quick stats -->
+      <div class="stat-grid">
+        <div class="stat-card pending">
+          <div class="stat-num" id="statPending">-</div>
+          <div class="stat-label">Pending Complaints</div>
+        </div>
+        <div class="stat-card progress">
+          <div class="stat-num" id="statProgress">-</div>
+          <div class="stat-label">In Progress</div>
+        </div>
+        <div class="stat-card resolved">
+          <div class="stat-num" id="statResolved">-</div>
+          <div class="stat-label">Resolved</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-num" id="statCerts">-</div>
+          <div class="stat-label">Certificate Types</div>
+        </div>
+      </div>
+
+      <!-- Announcements panel -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h3>Announcements</h3>
+            <p>These posts appear on the public barangay homepage.</p>
+          </div>
+          <button class="btn btn-primary btn-sm" id="addAnnouncementBtn">+ New Announcement</button>
+        </div>
+
+        <div id="announcementList"></div>
+        <div class="empty-state" id="announcementEmpty" style="display:none;">
+          <div class="big-ic">📭</div>
+          No announcements yet. Click "New Announcement" to post one.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ ANNOUNCEMENT MODAL (add/edit) ============ -->
+<div class="modal-overlay" id="announcementModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">New Announcement</h3>
+      <button class="modal-close" id="closeModalBtn">✕</button>
+    </div>
+    <form id="announcementForm">
+      <input type="hidden" id="announcementId">
+      <div class="field">
+        <label for="annTitle">Title</label>
+        <input type="text" id="annTitle" required placeholder="e.g. Free Vaccination Drive">
+      </div>
+      <div class="field">
+        <label for="annDate">Date</label>
+        <input type="date" id="annDate" required>
+      </div>
+      <div class="field">
+        <label for="annContent">Content</label>
+        <textarea id="annContent" required placeholder="Write the announcement details here..."></textarea>
+      </div>
+      <div class="field">
+        <label for="annImages">Photos <span style="font-weight:400; color:var(--text-mute);">(optional, you can select more than one)</span></label>
+        <input type="file" id="annImages" accept="image/png,image/jpeg,image/gif,image/webp" multiple>
+        <div style="font-size:12px; color:var(--text-mute); margin-top:4px;">
+          Select one or more photos to upload. They'll be saved to the server and shown on the public homepage.
+        </div>
+        <div id="existingImages" class="existing-images"></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Announcement</button>
+      </div>
+    </form>
+  </div>
+</div>
+<!--
+  ADMIN PANEL MODULE — markup
+  ---------------------------
+  Paste this block into home.html (or any page that has the sidebar/topbar),
+  right before the closing </body> tag, AFTER your existing modals
+  (e.g. after the #announcementModal block) and BEFORE the <script> tags.
+
+  Also add these two lines in <head> and before </body>:
+    <link rel="stylesheet" href="../css/admin-panel.css">
+    <script src="../admin_script/admin-panel.js"></script>
+  (adjust paths to match your project structure)
+
+  No changes are required to the admin-chip div itself — admin-panel.js
+  finds it with document.querySelector('.admin-chip') and wires up the
+  click handler automatically.
+-->
+
+<!-- ============ ADMIN PANEL (list of admin accounts) ============ -->
+<div class="modal-overlay" id="adminPanelModal">
+  <div class="modal admin-panel-modal">
+    <div class="modal-head">
+      <h3>Admin Accounts</h3>
+      <button class="modal-close" id="closeAdminPanelBtn">✕</button>
+    </div>
+
+    <div class="admin-panel-body">
+      <div class="admin-panel-toolbar">
+        <p class="admin-panel-sub">Manage the accounts that can log in to this admin panel.</p>
+        <button type="button" class="btn btn-primary btn-sm" id="addAdminBtn">+ New Admin</button>
+      </div>
+
+      <div id="adminList" class="admin-list"></div>
+      <div class="empty-state" id="adminEmpty" style="display:none;">
+        <div class="big-ic">👤</div>
+        No admin accounts yet. Click "New Admin" to add one.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADD / EDIT ADMIN FORM ============ -->
+<div class="modal-overlay" id="adminFormModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="adminFormTitle">New Admin</h3>
+      <button class="modal-close" id="closeAdminFormBtn">✕</button>
+    </div>
+    <form id="adminForm">
+      <input type="hidden" id="adminId">
+
+      <div class="field">
+        <label for="adminName">Full Name</label>
+        <input type="text" id="adminName" required placeholder="e.g. Juan Dela Cruz">
+      </div>
+
+      <div class="field">
+        <label for="adminUsername">Username</label>
+        <input type="text" id="adminUsername" required placeholder="e.g. jdelacruz">
+      </div>
+
+      <div class="field">
+        <label for="adminPassword">Password</label>
+        <input type="password" id="adminPassword" placeholder="Set a password">
+        <div style="font-size:12px; color:var(--text-mute); margin-top:4px;" id="adminPasswordHint">
+          Minimum 6 characters.
+        </div>
+      </div>
+
+      <div class="modal-foot">
+        <button type="button" class="btn btn-secondary" id="cancelAdminFormBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Admin</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="/admin/admin_script/common.js"></script>
+<script src="/admin/admin_script/home.js"></script>
+<script src="/admin/admin_script/admin-panel.js"></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Certificate Requirements | Barangay Cabanbanan</title>
+<meta name="description" content="Requirements, fees, and processing time for Barangay Clearance, Certificate of Residency, Certificate of Indigency, and Business Clearance.">
+<link rel="stylesheet" href="../user_style/style.css">
+<style>
+  /* ---- Certificate request flow ---- */
+  .cert-request-btn{
+    display:inline-block; margin-top:14px; width:100%;
+    padding:12px 16px; border:none; border-radius:8px;
+    background:#12283F; color:#fff; font-weight:600; font-size:0.95rem;
+    cursor:pointer; text-align:center; font-family:inherit;
+  }
+  .cert-request-btn:hover{ background:#0c1c2e; }
+
+  .my-requests{ margin-bottom:34px; }
+  .my-requests.is-empty{ display:none; }
+  .my-requests h2{ font-family:'Fraunces',serif; color:#12283F; font-size:1.3rem; margin:0 0 12px; }
+  .req-status-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:16px; }
+  .req-status-card{
+    background:#fff; border:1px solid #e5e0d3; border-radius:12px;
+    padding:18px 20px; box-shadow:0 2px 10px rgba(18,40,63,0.06);
+  }
+  .req-status-card h4{ margin:0 0 6px; color:#12283F; font-family:'Fraunces',serif; font-size:1.05rem; }
+  .req-status-pill{
+    display:inline-block; font-size:0.75rem; font-weight:700; letter-spacing:.02em;
+    padding:3px 10px; border-radius:999px; margin-bottom:10px;
+  }
+  .req-status-pill.pending{ background:#FBF0DD; color:#a5680f; }
+  .req-status-pill.approved{ background:#E4F3EA; color:#1f6b45; }
+  .req-status-note{ font-size:0.88rem; color:#555; margin:6px 0 10px; }
+  .req-status-cancel{
+    background:none; border:1px solid #c0392b; color:#c0392b;
+    padding:7px 14px; border-radius:7px; font-size:0.85rem; cursor:pointer; font-family:inherit;
+  }
+  .req-status-cancel:hover{ background:#fceceb; }
+  .req-code-box{
+    margin:6px 0 12px; padding:12px 14px; border-radius:8px;
+    background:#12283F; text-align:center;
+  }
+  .req-code-box .lbl{ color:#C89B3C; font-size:0.72rem; letter-spacing:.08em; text-transform:uppercase; }
+  .req-code-box .code{ color:#fff; font-family:monospace; font-size:1.5rem; font-weight:700; letter-spacing:4px; margin-top:2px; }
+  .req-approved-msg{ font-size:0.9rem; color:#232B3B; margin:0 0 8px; }
+  .req-approved-list{ margin:0 0 10px; padding-left:18px; font-size:0.87rem; color:#444; }
+  .req-claim-time{ font-size:0.85rem; font-weight:700; color:#12283F; margin:0; }
+
+  /* ---- Confirm modal ---- */
+  .req-modal-overlay{
+    display:none; position:fixed; inset:0; background:rgba(18,24,33,0.55);
+    align-items:center; justify-content:center; z-index:999; padding:16px;
+  }
+  .req-modal-overlay.open{ display:flex; }
+  .req-modal{
+    background:#fff; border-radius:14px; max-width:380px; width:100%;
+    padding:26px 24px; text-align:center;
+  }
+  .req-modal h3{ font-family:'Fraunces',serif; color:#12283F; margin:0 0 10px; }
+  .req-modal p{ color:#555; font-size:0.92rem; margin:0 0 20px; }
+  .req-modal-actions{ display:flex; gap:10px; }
+  .req-modal-actions button{
+    flex:1; padding:11px; border-radius:8px; border:none; font-family:inherit;
+    font-weight:600; cursor:pointer; font-size:0.92rem;
+  }
+  .req-modal-cancel{ background:#EEF1F6; color:#12283F; }
+  .req-modal-proceed{ background:#12283F; color:#fff; }
+  .req-modal-proceed:hover{ background:#0c1c2e; }
+</style>
+</head>
+<body>
+
+<div class="top-strip">
+  <div class="container">
+    <span>Republic of the Philippines &nbsp;<span class="sep">/</span>&nbsp; Manaoag, Pangasinan &nbsp;<span class="sep">/</span>&nbsp; District IV</span>
+    <span><a href="tel:+63281234567">(02) 8123-4567</a><span class="sep">|</span>Office hours: Mon–Fri, 8:00 AM–5:00 PM</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="container">
+    <a href="../user_html/home.html" class="brand">
+      <img class="seal" src="../user_style/images/barangay-seal.png" alt="Barangay Cabanbanan seal">
+      <span class="brand-text">
+        <span class="brand-kicker">Official Website</span>
+        <span class="brand-name">Barangay Cabanbanan</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span>
+    </button>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="../user_html/home.html">Home</a></li>
+        <li><a href="../user_html/home.html">Officials</a></li>
+        <li><a href="../user_html/contacts.html">Contacts</a></li>
+        <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+        <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<section class="page-hero">
+  <div class="container">
+    <span class="eyebrow">Frontline document requests</span>
+    <h1>Certificate Requirements</h1>
+    <p class="lede">Choose a document below, then tap each requirement to see exactly what to bring — including which IDs are accepted.</p>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <div class="container">
+
+     <!-- Shows this browser's own requests: pending ones, and approved ones with the claim code -->
+     <div id="myRequestsSection" class="my-requests is-empty">
+       <h2>Your Requests</h2>
+       <div id="myRequestsList" class="req-status-grid"></div>
+     </div>
+
+     <div id="certificateTabs" class="cert-tabs" role="tablist" aria-label="Certificate types">
+</div>
+
+<div id="certificatePanels">
+</div>
+
+      <div class="cert-note">
+        <span>&#9432;</span>
+        <p style="margin:0;"><strong>Note:</strong> Bring original copies plus one photocopy of each requirement. Certificates are released only to the applicant or an authorized representative with a signed authorization letter and the representative's own valid ID.</p>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <svg class="seal" style="--seal-size:46px;" viewBox="0 0 100 100" role="img" aria-label="Barangay San Isidro seal">
+          <circle cx="50" cy="50" r="47" fill="#0E2033" stroke="#C89B3C" stroke-width="3"/>
+          <polygon points="30,56 50,36 70,56" fill="#C89B3C"/>
+          <rect x="35" y="56" width="30" height="17" fill="#C89B3C"/>
+          <rect x="45.5" y="63" width="9" height="10" fill="#0E2033"/>
+        </svg>
+        <div>
+          <strong style="color:#fff; font-family:'Fraunces',serif; font-size:1.05rem;">Barangay San Isidro</strong>
+          <p>Barangay Cabanbanan<br>Manaoag,Pangasinan, Philippines</p>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Navigate</h5>
+        <ul>
+          <li><a href="../user_html/home.html">Home</a></li>
+          <li><a href="../user_html/officials.html">Officials</a></li>
+          <li><a href="../user_html/contacts.html">Contacts</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Services</h5>
+        <ul>
+          <li><a href="../user_html/certificate.html">Certificate Requirements</a></li>
+          <li><a href="../user_html/complaint.html">File a Complaint</a></li>
+          <li><a href="../user_html/contacts.html">Emergency Hotlines</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Office Hours</h5>
+        <ul>
+          <li>Mon–Fri: 8:00 AM–5:00 PM</li>
+          <li>Sat: 8:00 AM–12:00 NN</li>
+          <li>Emergency line: 24/7</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Barangay Cabanbanan, Pangasinan. All rights reserved.</span>
+   
+    </div>
+  </div>
+</footer>
+
+<!-- Request confirmation modal -->
+<div class="req-modal-overlay" id="reqConfirmModal">
+  <div class="req-modal">
+    <h3>Request this certificate?</h3>
+    <p id="reqConfirmText">Your request will be sent to the barangay admin for approval.</p>
+    <div class="req-modal-actions">
+      <button class="req-modal-cancel" id="reqConfirmCancelBtn">Cancel</button>
+      <button class="req-modal-proceed" id="reqConfirmProceedBtn">Proceed</button>
+    </div>
+  </div>
+</div>
+
+<script src="../user_script/common.js"></script>
+<script src="../user_script/certificate.js"></script>
+</body>
+</html>

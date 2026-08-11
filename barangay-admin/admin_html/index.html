@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | Barangay San Isidro</title>
+<link rel="stylesheet" href="/admin/css/style.css">
+</head>
+<body>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="seal">BSI</div>
+    <h1>Barangay Admin Panel</h1>
+    <p class="sub">Barangay San Isidro Management System</p>
+
+    <div class="error-msg" id="errorMsg">Invalid username or password.</div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="admin" autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Log In</button>
+    </form>
+
+    <div class="login-note">
+      <strong>Demo login:</strong> username <code>admin</code>, password <code>admin123</code><br><br>
+      🔌 <strong>Note for developer:</strong> this login is a placeholder. Connect it to your real
+      backend inside <code>index.js</code> — look for the comment block marked
+      <code>SERVER CONNECTION POINT</code>.
+    </div>
+  </div>
+</div>
+
+<script src="/admin/admin_script/index.js"></script>
+</body>
+</html>
