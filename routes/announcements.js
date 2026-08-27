@@ -3,44 +3,32 @@
 
    CRUD for barangay announcements, backed by Postgres.
    Supports MULTIPLE images per announcement:
-     - files are saved to disk under  barangay-admin/Image/announcements/
-     - the file path of each image (e.g. /Image/announcements/xyz.jpg)
-       is stored in the "announcement_images" table, one row per image
-     - that stored path is what the frontend (admin + public homepage)
-       uses directly as an <img src>, since it's served statically
-       by express.static("barangay-admin") in server.js
+     - files are uploaded to Supabase Storage (bucket "barangay-images",
+       folder "announcements/")
+     - the PUBLIC URL of each image is stored in the
+       "announcement_images" table, one row per image
+     - that stored URL is what the frontend (admin + public homepage)
+       uses directly as an <img src> — no local static serving needed
+       anymore, since the URL points straight at Supabase.
    ========================================================= */
 
 const express = require("express");
 const router = express.Router();
-const path = require("path");
-const fs = require("fs");
 const multer = require("multer");
 const pool = require("../db");
+const { uploadImage, deleteImage } = require("../utils/imageUpload");
+
+const FOLDER = "announcements";
 
 /* ---------------------------------------------------------
    UPLOAD CONFIG
+   Files are kept in memory (file.buffer) instead of written to
+   disk, then handed off to uploadImage() -> Supabase.
    --------------------------------------------------------- */
-// Resolves to <project root>/barangay-admin/Image/announcements
-const UPLOAD_DIR = path.join(__dirname, "..","barangay-admin", "Image", "announcements");
-
-// Make sure the folder exists so multer doesn't fail on first run
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${unique}${path.extname(file.originalname).toLowerCase()}`);
-  }
-});
-
 const ALLOWED_EXT = /\.(jpe?g|png|gif|webp)$/i;
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB per image
     files: 10                  // max 10 images per announcement
@@ -53,22 +41,6 @@ const upload = multer({
     }
   }
 });
-
-// Public URL prefix that gets stored in the DB / sent to the frontend
-const PUBLIC_PATH_PREFIX = "/admin/Image/announcements";
-
-function toPublicPath(filename) {
-  return `${PUBLIC_PATH_PREFIX}/${filename}`;
-}
-
-function deleteFileQuietly(filepath) {
-  const filename = path.basename(filepath);
-  fs.unlink(path.join(UPLOAD_DIR, filename), (err) => {
-    if (err && err.code !== "ENOENT") {
-      console.error("Failed to delete image file:", filename, err.message);
-    }
-  });
-}
 
 /* ---------------------------------------------------------
    GET /announcements  — list all, each with its images[]
@@ -138,20 +110,29 @@ router.post("/", upload.array("images", 10), async (req, res) => {
     return res.status(400).json({ error: "Title, date, and content are required" });
   }
 
+  const files = req.files || [];
+  const uploadedUrls = []; // track what made it to Supabase, for cleanup on failure
+
   try {
+    // Upload all files to Supabase first
+    const uploaded = [];
+    for (const file of files) {
+      const { publicUrl } = await uploadImage(file, FOLDER);
+      uploadedUrls.push(publicUrl);
+      uploaded.push(publicUrl);
+    }
+
     const inserted = await pool.query(
       "INSERT INTO announcements (title, date, content) VALUES ($1, $2, $3) RETURNING *",
       [title, date, content]
     );
     const announcement = inserted.rows[0];
 
-    const files = req.files || [];
     const images = [];
-    for (const file of files) {
-      const filepath = toPublicPath(file.filename);
+    for (const publicUrl of uploaded) {
       const imgRow = await pool.query(
         "INSERT INTO announcement_images (announcement_id, filepath) VALUES ($1, $2) RETURNING *",
-        [announcement.id, filepath]
+        [announcement.id, publicUrl]
       );
       images.push(imgRow.rows[0]);
     }
@@ -159,8 +140,8 @@ router.post("/", upload.array("images", 10), async (req, res) => {
     res.status(201).json({ ...announcement, images });
   } catch (err) {
     console.error(err);
-    // clean up any files that were already saved to disk before the DB error
-    (req.files || []).forEach((f) => deleteFileQuietly(f.filename));
+    // clean up anything that made it to Supabase before the error
+    await Promise.all(uploadedUrls.map((url) => deleteImage(url)));
     res.status(500).json({ error: "Failed to create announcement" });
   }
 });
@@ -178,6 +159,9 @@ router.put("/:id", upload.array("images", 10), async (req, res) => {
     return res.status(400).json({ error: "Title, date, and content are required" });
   }
 
+  const files = req.files || [];
+  const uploadedUrls = [];
+
   try {
     const updated = await pool.query(
       "UPDATE announcements SET title = $1, date = $2, content = $3 WHERE id = $4 RETURNING *",
@@ -187,12 +171,12 @@ router.put("/:id", upload.array("images", 10), async (req, res) => {
       return res.status(404).json({ error: "Announcement not found" });
     }
 
-    const files = req.files || [];
     for (const file of files) {
-      const filepath = toPublicPath(file.filename);
+      const { publicUrl } = await uploadImage(file, FOLDER);
+      uploadedUrls.push(publicUrl);
       await pool.query(
         "INSERT INTO announcement_images (announcement_id, filepath) VALUES ($1, $2)",
-        [id, filepath]
+        [id, publicUrl]
       );
     }
 
@@ -204,14 +188,15 @@ router.put("/:id", upload.array("images", 10), async (req, res) => {
     res.json({ ...updated.rows[0], images: images.rows });
   } catch (err) {
     console.error(err);
-    (req.files || []).forEach((f) => deleteFileQuietly(f.filename));
+    await Promise.all(uploadedUrls.map((url) => deleteImage(url)));
     res.status(500).json({ error: "Failed to update announcement" });
   }
 });
 
 /* ---------------------------------------------------------
    DELETE /announcements/:id/images/:imageId
-   Removes ONE image from an announcement (both DB row and file).
+   Removes ONE image from an announcement (both DB row and the
+   object in Supabase Storage).
    --------------------------------------------------------- */
 router.delete("/:id/images/:imageId", async (req, res) => {
   const { id, imageId } = req.params;
@@ -223,7 +208,7 @@ router.delete("/:id/images/:imageId", async (req, res) => {
     if (deleted.rows.length === 0) {
       return res.status(404).json({ error: "Image not found" });
     }
-    deleteFileQuietly(deleted.rows[0].filepath);
+    await deleteImage(deleted.rows[0].filepath);
     res.json({ deleted: true });
   } catch (err) {
     console.error(err);
@@ -249,8 +234,8 @@ router.delete("/:id", async (req, res) => {
       return res.status(404).json({ error: "Announcement not found" });
     }
     // announcement_images rows are removed automatically via ON DELETE CASCADE;
-    // we still need to clean up the actual files on disk.
-    images.rows.forEach((img) => deleteFileQuietly(img.filepath));
+    // we still need to clean up the actual objects in Supabase Storage.
+    await Promise.all(images.rows.map((img) => deleteImage(img.filepath)));
 
     res.json({ deleted: true });
   } catch (err) {

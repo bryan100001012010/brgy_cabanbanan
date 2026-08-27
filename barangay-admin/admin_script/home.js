@@ -271,4 +271,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("announcementForm")
         .addEventListener("submit", handleAnnouncementSubmit);
 });
-

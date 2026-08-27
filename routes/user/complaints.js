@@ -1,34 +1,24 @@
+/* =========================================================
+   routes/public/complaints.js
+
+   PUBLIC: residents file complaints and check status here.
+   Evidence files (images or PDFs) are uploaded to Supabase
+   Storage (bucket "barangay-images", folder "complaints/")
+   instead of the local disk. The public URL of each file is
+   stored in the "complaint_images" table.
+   ========================================================= */
+
 const express = require("express");
 const router = express.Router();
-const path = require("path");
-const fs = require("fs");
 const multer = require("multer");
 const pool = require("../../db");
+const { uploadImage, deleteImage } = require("../../utils/imageUpload");
+
+const FOLDER = "complaints";
 
 /* ---------------------------------------------------------
-   UPLOAD CONFIG
+   UPLOAD CONFIG — files kept in memory, then sent to Supabase
    --------------------------------------------------------- */
-const UPLOAD_DIR = path.join(
-  __dirname,
-  "..",
-  "..",
-  "barangay-admin",
-  "Image",
-  "complaints"
-);
-
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${unique}${path.extname(file.originalname).toLowerCase()}`);
-  }
-});
-
 const ALLOWED_EXT = /\.(jpe?g|png|gif|webp|pdf)$/i;
 
 const ALLOWED_MIME = [
@@ -40,7 +30,7 @@ const ALLOWED_MIME = [
 ];
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: 8 * 1024 * 1024,
     files: 10
@@ -60,18 +50,6 @@ const upload = multer({
 /* ---------------------------------------------------------
    HELPERS
    --------------------------------------------------------- */
-const PUBLIC_PATH_PREFIX = "/Image/complaints";
-
-function toPublicPath(filename) {
-  return `${PUBLIC_PATH_PREFIX}/${filename}`;
-}
-
-function deleteFileQuietly(filepath) {
-  const filename = path.basename(filepath);
-
-  fs.unlink(path.join(UPLOAD_DIR, filename), () => {});
-}
-
 function generateTrackingCode(issueType) {
   const prefix = "BSI";
   const typeCode = (issueType || "GEN").substring(0, 3).toUpperCase();
@@ -163,7 +141,18 @@ router.post("/", upload.array("evidence", 10), async (req, res) => {
     });
   }
 
+  const files = req.files || [];
+  const uploadedUrls = []; // track what made it to Supabase, for cleanup on failure
+
   try {
+
+    // Upload evidence to Supabase first, before touching the DB
+    const uploaded = [];
+    for (const file of files) {
+      const { publicUrl } = await uploadImage(file, FOLDER);
+      uploadedUrls.push(publicUrl);
+      uploaded.push(publicUrl);
+    }
 
     await pool.query("BEGIN");
 
@@ -205,9 +194,7 @@ router.post("/", upload.array("evidence", 10), async (req, res) => {
 
     const complaint = inserted.rows[0];
 
-    const files = req.files || [];
-
-    for (const file of files) {
+    for (const publicUrl of uploaded) {
 
       await pool.query(
         `INSERT INTO complaint_images
@@ -215,7 +202,7 @@ router.post("/", upload.array("evidence", 10), async (req, res) => {
         VALUES ($1,$2)`,
         [
           complaint.id,
-          toPublicPath(file.filename)
+          publicUrl
         ]
       );
 
@@ -235,9 +222,8 @@ router.post("/", upload.array("evidence", 10), async (req, res) => {
 
     console.error(err);
 
-    (req.files || []).forEach(file => {
-      deleteFileQuietly(file.filename);
-    });
+    // clean up anything that made it to Supabase before the error
+    await Promise.all(uploadedUrls.map((url) => deleteImage(url)));
 
     res.status(500).json({
       error: "Failed to submit complaint."

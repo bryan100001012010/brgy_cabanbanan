@@ -13,38 +13,17 @@
    the app, add one before GET/PATCH/DELETE here, otherwise anyone
    who finds the URL could view, edit, or delete complaints.
 
-   Evidence files are saved to disk under
-   barangay-admin/Image/complaints/, and the file path of each
-   one (e.g. /Image/complaints/xyz.jpg) is stored in the
-   "complaint_images" table, one row per file — same pattern as
+   Evidence files live in Supabase Storage (bucket "barangay-images",
+   folder "complaints/"), uploaded by routes/public/complaints.js.
+   The public URL of each one is stored in the "complaint_images"
+   table, one row per file — same pattern as
    announcements/announcement_images.
    ========================================================= */
 
 const express = require("express");
 const router = express.Router();
-const path = require("path");
-const fs = require("fs");
 const pool = require("../db");
-
-/* ---------------------------------------------------------
-   UPLOAD CONFIG
-   --------------------------------------------------------- */
-const UPLOAD_DIR = path.join(__dirname, "..", "barangay-admin", "Image", "complaints");
-
-if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-function deleteFileQuietly(filepath) {
-  const filename = path.basename(filepath);
-
-  fs.unlink(path.join(UPLOAD_DIR, filename), (err) => {
-    if (err && err.code !== "ENOENT") {
-      console.error("Failed to delete complaint file:", filename, err.message);
-    }
-  });
-}
-
+const { deleteImage } = require("../utils/imageUpload");
 
 /* ---------------------------------------------------------
    GET /complaints  — admin: list all, each with its images[]
@@ -101,12 +80,6 @@ router.get("/:id", async (req, res) => {
 });
 
 /* ---------------------------------------------------------
-   POST /complaints  — PUBLIC: resident files a new complaint
-   Fields: name, contact, address, issueType, category, otherParty,
-           details, urgency, evidence (0-10 files)
-   --------------------------------------------------------- */
-
-/* ---------------------------------------------------------
    PATCH /complaints/:id  — ADMIN: update status only
    Body: { status: "Pending" | "In Progress" | "Resolved" }
    --------------------------------------------------------- */
@@ -140,7 +113,7 @@ router.patch("/:id", async (req, res) => {
 
 /* ---------------------------------------------------------
    DELETE /complaints/:id/images/:imageId
-   ADMIN: remove ONE piece of evidence (DB row + file on disk)
+   ADMIN: remove ONE piece of evidence (DB row + object in Storage)
    --------------------------------------------------------- */
 router.delete("/:id/images/:imageId", async (req, res) => {
   const { id, imageId } = req.params;
@@ -152,7 +125,7 @@ router.delete("/:id/images/:imageId", async (req, res) => {
     if (deleted.rows.length === 0) {
       return res.status(404).json({ error: "Image not found" });
     }
-    deleteFileQuietly(deleted.rows[0].filepath);
+    await deleteImage(deleted.rows[0].filepath);
     res.json({ deleted: true });
   } catch (err) {
     console.error(err);
@@ -191,10 +164,8 @@ router.delete("/:id", async (req, res) => {
     // Save database changes
     await pool.query("COMMIT");
 
-    // Delete the files from disk AFTER the database commit
-    images.rows.forEach(img => {
-      deleteFileQuietly(img.filepath);
-    });
+    // Delete the objects from Supabase Storage AFTER the database commit
+    await Promise.all(images.rows.map((img) => deleteImage(img.filepath)));
 
     res.json({
       deleted: true

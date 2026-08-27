@@ -5,12 +5,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Login | Barangay San Isidro</title>
 <link rel="stylesheet" href="/admin/css/style.css">
+<style>
+  /* ---------------------------------------------------------
+     Password field + eye toggle button
+     --------------------------------------------------------- */
+  .password-field-wrap {
+    position: relative;
+  }
+  .password-field-wrap input {
+    width: 100%;
+    padding-right: 42px; /* room for the eye button */
+    box-sizing: border-box;
+  }
+  .toggle-password-btn {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    line-height: 0;
+  }
+  .toggle-password-btn:hover {
+    color: #222;
+  }
+  .toggle-password-btn svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+  }
+
+  /* ---------------------------------------------------------
+     Prevents the "flash of login form" — if this browser is
+     already logged in, index.js redirects to home.html right
+     away, but that check is async (a fetch to /admins/me).
+     Without this, the login form renders and is visible for a
+     split second before the redirect fires. Starting hidden and
+     only revealing once index.js has made its decision (either
+     "redirecting now" or "show the form") fixes that.
+     --------------------------------------------------------- */
+  .login-wrap {
+    visibility: hidden;
+  }
+  .login-wrap.ready {
+    visibility: visible;
+  }
+</style>
 </head>
 <body>
 
 <div class="login-wrap">
   <div class="login-card">
-    <div class="seal">BSI</div>
+    <div class="seal">BC</div>
     <h1>Barangay Admin Panel</h1>
     <p class="sub">Barangay San Isidro Management System</p>
 
@@ -23,7 +75,21 @@
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+        <div class="password-field-wrap">
+          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="toggle-password-btn" id="togglePasswordBtn" aria-label="Show password" aria-pressed="false">
+            <!-- Eye icon (shown when password is currently hidden) -->
+            <svg id="eyeOpenIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <!-- Eye-off icon (shown when password is currently visible) -->
+            <svg id="eyeOffIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+              <line x1="1" y1="1" x2="23" y2="23"></line>
+            </svg>
+          </button>
+        </div>
       </div>
       <button type="submit" class="btn btn-primary">Log In</button>
     </form>

@@ -4,36 +4,22 @@
 
        app.use("/admin/officials", require("./routes/officials"));
 
-   Full CRUD + photo upload. This mirrors the pattern you already
-   use for announcements (routes/announcements.js -> /admin/announcements).
-   The public, read-only counterpart is routes/user/officials.js.
-
-   Requires: npm install multer
+   Full CRUD + photo upload (now via Supabase Storage, bucket
+   "barangay-images", folder "officials/"). The public, read-only
+   counterpart is routes/user/officials.js (unchanged — it just
+   passes photo_url straight through).
    ============================================================ */
 
 const express = require("express");
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
 const router = express.Router();
 const pool = require("../db");
+const { uploadImage } = require("../utils/imageUpload");
 
-const PHOTO_DIR = path.join(__dirname, "..", "barangay-admin", "Image", "officials");
-
-if (!fs.existsSync(PHOTO_DIR)) {
-  fs.mkdirSync(PHOTO_DIR, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, PHOTO_DIR),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname) || ".jpg";
-    cb(null, `official-${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`);
-  }
-});
+const FOLDER = "officials";
 
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("image/")) {
@@ -59,11 +45,17 @@ router.get("/", async (req, res) => {
   }
 });
 
-// UPLOAD a photo -> returns a URL under /Image/officials/...
-router.post("/upload", upload.single("photo"), (req, res) => {
+// UPLOAD a photo -> uploads to Supabase, returns its public URL
+router.post("/upload", upload.single("photo"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-  const url = `/Image/officials/${req.file.filename}`;
-  res.json({ url });
+
+  try {
+    const { publicUrl } = await uploadImage(req.file, FOLDER);
+    res.json({ url: publicUrl });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to upload photo" });
+  }
 });
 
 // CREATE

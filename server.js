@@ -119,8 +119,16 @@ app.use("/api/certificates", publicCertificateRoutes);
 app.use("/Image",express.static(path.join(__dirname, "barangay-admin", "Image"))
 );
 app.get("/admin", (req, res) => {
+    // Check the real server-side session BEFORE sending any HTML.
+    // If already logged in, redirect straight to the dashboard —
+    // this way the browser never receives/paints the login page at
+    // all, so there's no flash/flicker to fix on the client side.
+    if (req.session && req.session.adminId) {
+        return res.redirect("/admin/admin_html/home.html");
+    }
     res.sendFile(path.join(__dirname, "barangay-admin", "admin_html",  "index.html"));
 });
+ 
 
 
 app.get("/", (req, res) => {

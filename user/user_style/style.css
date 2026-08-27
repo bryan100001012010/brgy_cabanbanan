@@ -433,7 +433,7 @@ ul{ margin: 0; padding: 0; list-style: none; }
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-image: url('images/barangay-hall.png');
+  background-image: url('images/barangay-hall.jpg');
   background-size: cover;
   background-position: center 30%;
   filter: grayscale(45%) sepia(12%) blur(1.5px);
