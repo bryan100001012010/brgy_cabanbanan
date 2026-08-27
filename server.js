@@ -20,6 +20,8 @@ app.use(express.urlencoded({ extended: true }));
    SESSION_SECRET must be set in .env (any long random string). Set
    cookie.secure to true once this is served over HTTPS in production.
    ------------------------------------------------------------------ */
+app.set("trust proxy", 1);
+
 app.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
