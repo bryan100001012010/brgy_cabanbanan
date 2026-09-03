@@ -30,6 +30,8 @@ document.addEventListener('DOMContentLoaded', function () {
   var confirmStatusLine = document.getElementById('confirm-status-line');
   var confirmNote = document.getElementById('confirm-note');
   var trackingEl = document.getElementById('tracking-code');
+  var checkStatusBtnEl = document.getElementById('check-status-btn');
+  var fileNewBtn = document.getElementById('file-new-btn');
 
   var STATUS_LABELS = {
     Pending: 'Pending review by the barangay',
@@ -88,6 +90,37 @@ document.addEventListener('DOMContentLoaded', function () {
   function unlockForm() {
     if (confirmPanel) confirmPanel.classList.remove('is-active');
     if (complaintForm) complaintForm.style.display = 'grid';
+    if (checkStatusBtnEl) checkStatusBtnEl.style.display = '';
+    if (fileNewBtn) fileNewBtn.style.display = 'none';
+  }
+
+  /* -----------------------------------------------------------------
+     Shown when a status check comes back "Resolved". Rather than
+     silently clearing localStorage and re-showing the empty form
+     (which looked like nothing happened), this tells the resident
+     their complaint is done and thanks them, then waits for them to
+     press "File a New Complaint" before actually unlocking the form.
+     ----------------------------------------------------------------- */
+  function showResolvedPanel(data) {
+    if (complaintForm) complaintForm.style.display = 'none';
+    if (trackingEl) trackingEl.textContent = data.tracking_code;
+    if (confirmBadge) confirmBadge.textContent = '✓';
+    if (confirmTitle) confirmTitle.textContent = 'Your Complaint Has Been Resolved';
+    if (confirmMessage) {
+      confirmMessage.textContent = 'Good news — your complaint has been marked resolved by the barangay. Thank you for using the website.';
+    }
+    if (confirmStatusLine) {
+      confirmStatusLine.textContent = 'Current status: Resolved';
+    }
+    if (confirmNote) {
+      confirmNote.textContent = 'If this issue comes up again or isn\'t actually settled, you\'re welcome to file a new complaint.';
+    }
+    if (checkStatusBtnEl) checkStatusBtnEl.style.display = 'none';
+    if (fileNewBtn) fileNewBtn.style.display = '';
+    if (confirmPanel) {
+      confirmPanel.classList.add('is-active');
+      confirmPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 
   function checkExistingComplaint() {
@@ -111,8 +144,10 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(function (data) {
         if (!data) return;
         if (data.status === 'Resolved') {
-          localStorage.removeItem('complaintTracking');
-          unlockForm();
+          // Keep the tracking code until they actually choose to file a
+          // new complaint (see file-new-btn handler below) — that way
+          // they still see the "resolved" message if they come back.
+          showResolvedPanel(data);
         } else {
           showOngoingPanel(data);
         }
@@ -121,20 +156,38 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error(err);
         // Network hiccup — don't lock the resident out over that.
         unlockForm();
+      })
+      .finally(function () {
+        // The top "Your Complaint Status" panel (status-panel.js) does
+        // its own separate fetch and doesn't know we just checked — tell
+        // it to refresh so it doesn't sit on a stale status like "Pending"
+        // after we've just found out it's Resolved.
+        if (window.BSIStatusPanel && typeof window.BSIStatusPanel.refresh === 'function') {
+          window.BSIStatusPanel.refresh();
+        }
       });
   }
 
   checkExistingComplaint();
 
-  var checkStatusBtn = document.getElementById('check-status-btn');
-  if (checkStatusBtn) {
-    checkStatusBtn.addEventListener('click', function () {
-      checkStatusBtn.disabled = true;
-      checkStatusBtn.textContent = 'Checking...';
+  if (checkStatusBtnEl) {
+    checkStatusBtnEl.addEventListener('click', function () {
+      checkStatusBtnEl.disabled = true;
+      checkStatusBtnEl.textContent = 'Checking...';
       Promise.resolve(checkExistingComplaint()).finally(function () {
-        checkStatusBtn.disabled = false;
-        checkStatusBtn.textContent = 'Check Status';
+        checkStatusBtnEl.disabled = false;
+        checkStatusBtnEl.textContent = 'Check Status';
       });
+    });
+  }
+
+  if (fileNewBtn) {
+    fileNewBtn.addEventListener('click', function () {
+      localStorage.removeItem('complaintTracking');
+      unlockForm();
+      if (window.BSIStatusPanel && typeof window.BSIStatusPanel.refresh === 'function') {
+        window.BSIStatusPanel.refresh();
+      }
     });
   }
  
