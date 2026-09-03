@@ -58,7 +58,8 @@
 
     var panel = document.createElement('div');
     panel.id = PANEL_ID;
-    panel.style.cssText = 'max-width:900px;margin:20px auto;padding:16px 20px;' +
+    panel.style.cssText = 'max-width:900px;width:auto;box-sizing:border-box;' +
+      'margin:20px 16px;padding:16px 20px;' +
       'border:1px solid #e2c98a;border-radius:10px;background:#fffaf0;' +
       'font-family:inherit;';
 
@@ -82,13 +83,14 @@
       row.appendChild(badge);
 
       var body = document.createElement('div');
+      body.style.cssText = 'min-width:0;flex:1 1 auto;';
 
       var line1 = document.createElement('div');
-      line1.style.cssText = 'font-size:0.9rem;color:#222;';
+      line1.style.cssText = 'font-size:0.9rem;color:#222;overflow-wrap:break-word;word-break:break-word;';
       line1.textContent = (c.category || 'Complaint') + ' — Tracking #' + c.tracking_code;
 
       var line2 = document.createElement('div');
-      line2.style.cssText = 'font-size:0.82rem;color:#555;margin-top:2px;';
+      line2.style.cssText = 'font-size:0.82rem;color:#555;margin-top:2px;overflow-wrap:break-word;word-break:break-word;';
       line2.textContent = meta.text;
 
       body.appendChild(line1);
